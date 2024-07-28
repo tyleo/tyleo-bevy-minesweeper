@@ -1,4 +1,5 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
+use board_plugin::{components::Components, ext::*, BoardPlugin};
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -30,15 +31,23 @@ fn startup_camera_system(mut commands: Commands) {
     commands.spawn(camera_2d_bundle);
 }
 
+fn iteration_system(mut commands: Commands) {
+    commands.spawn(board_plugin::components::Coordinates { x: 1, y: 1 });
+}
+
 fn main() {
     let mut app = App::new();
 
+    app.register_types(Components);
+
     app.add_plugins(make_default_plugins());
+    app.add_plugins(BoardPlugin);
 
     #[cfg(feature = "debug")]
     app.add_plugins(WorldInspectorPlugin::new());
 
     app.add_systems(Startup, startup_camera_system);
+    app.add_systems(Startup, iteration_system);
 
     app.run();
 }
