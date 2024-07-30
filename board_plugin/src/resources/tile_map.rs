@@ -67,19 +67,19 @@ impl TileMap {
         result
     }
 
-    pub fn get_width(&self) -> u16 {
+    pub fn width(&self) -> u16 {
         self.width
     }
 
-    pub fn get_height(&self) -> u16 {
+    pub fn height(&self) -> u16 {
         self.height
     }
 
-    pub fn get_bomb_count(&self) -> u16 {
+    pub fn bomb_count(&self) -> u16 {
         self.bomb_count
     }
 
-    pub fn get_map(&self) -> &Vec<Vec<Tile>> {
+    pub fn map(&self) -> &Vec<Vec<Tile>> {
         &self.map
     }
 

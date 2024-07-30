@@ -1,5 +1,5 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
-use board_plugin::{components::Components, ext::*, BoardPlugin};
+use board_plugin::{ext::*, resources::BoardOptions, BoardPlugin, TypeRegistry};
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -38,13 +38,20 @@ fn iteration_system(mut commands: Commands) {
 fn main() {
     let mut app = App::new();
 
-    app.register_types(Components);
+    app.register_types(TypeRegistry);
 
     app.add_plugins(make_default_plugins());
     app.add_plugins(BoardPlugin);
 
     #[cfg(feature = "debug")]
     app.add_plugins(WorldInspectorPlugin::new());
+
+    app.insert_resource(BoardOptions {
+        map_size: (20, 20),
+        bomb_count: 40,
+        tile_padding: 3.0,
+        ..default()
+    });
 
     app.add_systems(Startup, startup_camera_system);
     app.add_systems(Startup, iteration_system);
