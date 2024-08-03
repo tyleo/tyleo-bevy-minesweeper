@@ -1,7 +1,8 @@
+use bevy::prelude::*;
 #[cfg(feature = "debug")]
 use colored::Colorize;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Reflect)]
 pub enum Tile {
     Bomb,
     BombNeighbor(u8),

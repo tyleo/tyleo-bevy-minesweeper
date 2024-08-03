@@ -1,16 +1,19 @@
+mod bounds2;
 mod type_registry;
 
 pub mod components;
 pub mod ext;
 pub mod resources;
+pub mod systems;
 pub mod util;
 
-use components::Coordinates;
+pub use bounds2::*;
 pub use type_registry::*;
 
-use crate::{components::*, resources::*};
+use crate::{components::*, resources::*, systems::*};
 use bevy::log;
 use bevy::prelude::*;
+use components::Coordinates;
 use resources::TileMap;
 
 pub struct BoardPlugin;
@@ -18,6 +21,7 @@ pub struct BoardPlugin;
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, Self::create_board);
+        app.add_systems(FixedUpdate, input_handling);
         log::info!("Loaded Board Plugin");
     }
 }
@@ -98,6 +102,15 @@ impl BoardPlugin {
                     font,
                 );
             });
+
+        commands.insert_resource(Board {
+            tile_map,
+            bounds: Bounds2 {
+                position: board_position.xy(),
+                size: board_size,
+            },
+            tile_size,
+        })
     }
 
     /// Computes a tile size that matches the window according to the tile map size

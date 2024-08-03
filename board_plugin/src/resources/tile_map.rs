@@ -1,8 +1,9 @@
 use crate::{components::*, resources::*};
+use bevy::prelude::*;
 use rand::{thread_rng, Rng};
 
 // A grid of tiles play area.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reflect)]
 pub struct TileMap {
     bomb_count: u16,
     height: u16,
