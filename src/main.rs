@@ -47,8 +47,9 @@ fn main() {
     app.add_plugins(WorldInspectorPlugin::new());
 
     app.insert_resource(BoardOptions {
-        map_size: (20, 20),
         bomb_count: 40,
+        map_size: (20, 20),
+        safe_start: true,
         tile_padding: 3.0,
         ..default()
     });
