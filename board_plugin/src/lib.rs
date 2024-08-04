@@ -49,6 +49,7 @@ impl BoardPlugin {
             Some(o) => o.clone(),
         };
 
+        let tile_padding = board_options.tile_padding;
         let tile_size = match board_options.tile_size {
             TileSizeOption::Fixed(v) => v,
             TileSizeOption::Adaptive { min, max } => Self::compute_adaptive_tile_size(
@@ -96,7 +97,7 @@ impl BoardPlugin {
                     parent,
                     &tile_map,
                     tile_size,
-                    board_options.tile_padding,
+                    tile_padding,
                     Color::linear_rgb(0.1, 0.1, 0.1),
                     bomb_image,
                     font,
@@ -119,13 +120,16 @@ impl BoardPlugin {
         (min, max): (f32, f32),      // Tile size constraints
         (width, height): (u16, u16), // Tile map dimensions
     ) -> f32 {
-        let window_width = window.resolution.physical_width() as f32;
-        let window_height = window.resolution.physical_height() as f32;
+        let window_width = window.resolution.width();
+        let window_height = window.resolution.height();
 
-        let max_width = window_width / width as f32;
-        let max_heigth = window_height / height as f32;
+        let width = width as f32;
+        let height = height as f32;
 
-        max_width.min(max_heigth).clamp(min, max)
+        let max_width = window_width / width;
+        let max_height = window_height / height;
+
+        max_width.min(max_height).clamp(min, max)
     }
 
     fn spawn_tiles(
@@ -222,7 +226,7 @@ impl BoardPlugin {
                 justify: JustifyText::Center,
                 ..default()
             },
-            transform: Transform::from_xyz(0., -5., 1.),
+            transform: Transform::from_xyz(0., -3., 1.),
             ..default()
         }
     }
