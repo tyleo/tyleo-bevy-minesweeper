@@ -1,4 +1,4 @@
-use crate::{Bounds2, Coordinates, TileMap};
+use crate::{components::*, resources::*, Bounds2};
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 

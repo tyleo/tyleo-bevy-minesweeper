@@ -1,4 +1,4 @@
-use crate::Board;
+use crate::resources::*;
 use bevy::{
     input::{mouse::MouseButtonInput, ButtonState},
     log,
