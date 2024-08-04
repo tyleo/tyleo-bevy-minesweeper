@@ -8,12 +8,12 @@ use bevy::{
 pub fn input_handling(
     windows: Query<&Window>,
     board: Res<Board>,
-    mut button_evr: EventReader<MouseButtonInput>,
+    mut button_event_reader: EventReader<MouseButtonInput>,
     mut tile_trigger_event_writer: EventWriter<TileTriggerEvent>,
 ) {
     let window = windows.get_single().unwrap();
 
-    for event in button_evr.read() {
+    for event in button_event_reader.read() {
         let button_state = event.state;
         // Early out if the button is not pressed
         if button_state != ButtonState::Pressed {

@@ -1,14 +1,20 @@
 use crate::{components::*, events::TileTriggerEvent, resources::*, systems::*, util::*};
 use bevy::{log, prelude::*, utils::HashMap};
 
-pub struct BoardPlugin;
+pub struct BoardPlugin<T> {
+    pub running_state: T,
+}
 
-impl Plugin for BoardPlugin {
+impl<T: States> Plugin for BoardPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, Self::create_board);
-        app.add_systems(FixedUpdate, input_handling);
-        app.add_systems(FixedUpdate, read_tile_trigger_event);
-        app.add_systems(FixedUpdate, uncover_tiles);
+        app.add_systems(OnEnter(self.running_state.clone()), Self::create_board);
+        app.add_systems(OnExit(self.running_state.clone()), Self::cleanup_board);
+
+        app.add_systems(
+            FixedUpdate,
+            (input_handling, read_tile_trigger_event, uncover_tiles)
+                .run_if(in_state(self.running_state.clone())),
+        );
 
         app.add_event::<TileTriggerEvent>();
 
@@ -16,7 +22,7 @@ impl Plugin for BoardPlugin {
     }
 }
 
-impl BoardPlugin {
+impl<T> BoardPlugin<T> {
     pub fn create_board(
         mut commands: Commands,
         board_options: Option<Res<BoardOptions>>,
@@ -65,40 +71,47 @@ impl BoardPlugin {
 
         // Create entities
         let mut safe_start_entity = None;
-        commands
-            .spawn_empty()
-            .insert(Name::new("Board"))
-            .insert(Transform::from_translation(board_position))
-            .insert(GlobalTransform::default())
-            .insert(InheritedVisibility::default())
-            .with_children(|parent| {
-                // Spawn background
-                parent
-                    .spawn(SpriteBundle {
-                        sprite: Sprite {
-                            color: Color::WHITE,
-                            custom_size: Some(board_size),
+        let board_entity = {
+            let mut board_entity_commands = commands.spawn_empty();
+            board_entity_commands
+                .insert(Name::new("Board"))
+                .insert(Transform::from_translation(board_position))
+                .insert(GlobalTransform::default())
+                .insert(InheritedVisibility::default())
+                .with_children(|parent| {
+                    // Spawn background
+                    parent
+                        .spawn(SpriteBundle {
+                            sprite: Sprite {
+                                color: Color::WHITE,
+                                custom_size: Some(board_size),
+                                ..default()
+                            },
+                            transform: Transform::from_xyz(
+                                board_size.x / 2.,
+                                board_size.y / 2.,
+                                0.,
+                            ),
                             ..default()
-                        },
-                        transform: Transform::from_xyz(board_size.x / 2., board_size.y / 2., 0.),
-                        ..default()
-                    })
-                    .insert(Name::new("Background"));
+                        })
+                        .insert(Name::new("Background"));
 
-                // Spawn tiles
-                Self::spawn_tiles(
-                    parent,
-                    &tile_map,
-                    tile_size,
-                    tile_padding,
-                    Color::srgb_u8(60, 60, 60),
-                    bomb_image,
-                    font,
-                    Color::srgb_u8(40, 40, 40),
-                    &mut covered_tiles,
-                    &mut safe_start_entity,
-                );
-            });
+                    // Spawn tiles
+                    Self::spawn_tiles(
+                        parent,
+                        &tile_map,
+                        tile_size,
+                        tile_padding,
+                        Color::srgb_u8(60, 60, 60),
+                        bomb_image,
+                        font,
+                        Color::srgb_u8(40, 40, 40),
+                        &mut covered_tiles,
+                        &mut safe_start_entity,
+                    );
+                });
+            board_entity_commands.id()
+        };
 
         commands.insert_resource(Board {
             tile_map,
@@ -108,6 +121,7 @@ impl BoardPlugin {
             },
             tile_size,
             covered_tiles,
+            entity: board_entity,
         });
 
         if board_options.safe_start {
@@ -259,5 +273,10 @@ impl BoardPlugin {
             transform: Transform::from_xyz(0., y_offset, 1.),
             ..default()
         }
+    }
+
+    fn cleanup_board(board: Res<Board>, mut commands: Commands) {
+        commands.entity(board.entity).despawn_recursive();
+        commands.remove_resource::<Board>();
     }
 }
