@@ -213,6 +213,8 @@ impl BoardPlugin {
             _ => Color::srgb_u8(222, 106, 251), // Purple
         };
 
+        let y_offset = -size / 10.;
+
         Text2dBundle {
             text: Text {
                 sections: vec![TextSection {
@@ -226,7 +228,7 @@ impl BoardPlugin {
                 justify: JustifyText::Center,
                 ..default()
             },
-            transform: Transform::from_xyz(0., -3., 1.),
+            transform: Transform::from_xyz(0., y_offset, 1.),
             ..default()
         }
     }

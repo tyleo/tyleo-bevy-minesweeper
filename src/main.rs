@@ -1,5 +1,5 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
-use board_plugin::{ext::*, resources::BoardOptions, BoardPlugin, TypeRegistry};
+use board_plugin::{ext::*, resources::*, BoardPlugin, TypeRegistry};
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
