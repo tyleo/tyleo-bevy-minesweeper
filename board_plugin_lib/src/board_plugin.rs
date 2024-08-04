@@ -122,6 +122,7 @@ impl BoardPlugin {
         max_width.min(max_height).clamp(min, max)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn spawn_tiles(
         parent: &mut ChildBuilder,
         tile_map: &TileMap,
