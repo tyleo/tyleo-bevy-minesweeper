@@ -1,5 +1,6 @@
 use crate::{Bounds2, Coordinates, TileMap};
 use bevy::prelude::*;
+use bevy::utils::HashMap;
 
 #[derive(Debug, Reflect, Resource)]
 #[reflect(Resource)]
@@ -7,6 +8,7 @@ pub struct Board {
     pub tile_map: TileMap,
     pub bounds: Bounds2,
     pub tile_size: f32,
+    pub covered_tiles: HashMap<Coordinates, Entity>,
 }
 
 impl Board {
@@ -27,5 +29,24 @@ impl Board {
             x: (coordinates.x / self.tile_size) as u16,
             y: (coordinates.y / self.tile_size) as u16,
         })
+    }
+
+    /// Retrieves a covered tile entity
+    pub fn tile_to_uncover(&self, coordinates: &Coordinates) -> Option<&Entity> {
+        self.covered_tiles.get(coordinates)
+    }
+
+    /// We try to uncover a tile, returning the entity
+    pub fn try_uncover_tile(&mut self, coordinates: &Coordinates) -> Option<Entity> {
+        self.covered_tiles.remove(coordinates)
+    }
+
+    /// We retrieve the adjacent covered tile entities of some `coordinates`
+    pub fn adjacent_covered_tiles(&self, coordinates: Coordinates) -> Vec<Entity> {
+        self.tile_map
+            .iter_neighbors(coordinates)
+            .filter_map(|neighbor_coordinates| self.covered_tiles.get(&neighbor_coordinates))
+            .copied()
+            .collect()
     }
 }

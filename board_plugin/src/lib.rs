@@ -11,8 +11,7 @@ pub use bounds2::*;
 pub use type_registry::*;
 
 use crate::{components::*, resources::*, systems::*};
-use bevy::log;
-use bevy::prelude::*;
+use bevy::{log, prelude::*, utils::HashMap};
 use components::Coordinates;
 use resources::TileMap;
 
@@ -58,6 +57,8 @@ impl BoardPlugin {
                 (tile_map.width(), tile_map.height()),
             ),
         };
+        let mut covered_tiles =
+            HashMap::with_capacity((tile_map.width() * tile_map.height()).into());
 
         let board_size = Vec2::new(
             tile_map.width() as f32 * tile_size,
@@ -98,9 +99,11 @@ impl BoardPlugin {
                     &tile_map,
                     tile_size,
                     tile_padding,
-                    Color::linear_rgb(0.1, 0.1, 0.1),
+                    Color::srgb_u8(60, 60, 60),
                     bomb_image,
                     font,
+                    Color::srgb_u8(40, 40, 40),
+                    &mut covered_tiles,
                 );
             });
 
@@ -111,6 +114,7 @@ impl BoardPlugin {
                 size: board_size,
             },
             tile_size,
+            covered_tiles,
         })
     }
 
@@ -140,6 +144,8 @@ impl BoardPlugin {
         tile_color: Color,
         bomb_image: Handle<Image>,
         font: Handle<Font>,
+        covered_tile_color: Color,
+        covered_tiles: &mut HashMap<Coordinates, Entity>,
     ) {
         // Tiles
         for (y, tile_row) in tile_map.map().iter().enumerate() {
@@ -167,6 +173,23 @@ impl BoardPlugin {
                 });
                 cmd.insert(Name::new(format!("Tile ({}, {})", x, y)));
                 cmd.insert(coordinates);
+
+                // Add covered sprites
+                cmd.with_children(|parent| {
+                    let mut entity_commands = parent.spawn(SpriteBundle {
+                        sprite: Sprite {
+                            custom_size: Some(Vec2::splat(tile_size - tile_padding)),
+                            color: covered_tile_color,
+                            ..default()
+                        },
+                        transform: Transform::from_xyz(0.0, 0., 2.),
+                        ..default()
+                    });
+                    entity_commands.insert(Name::new("Tile Cover"));
+
+                    let entity = entity_commands.id();
+                    covered_tiles.insert(coordinates, entity);
+                });
 
                 // Create tile-specific components
                 match tile {
