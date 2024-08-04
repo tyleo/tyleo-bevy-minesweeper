@@ -1288,7 +1288,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "board_plugin"
+name = "board_plugin_lib"
 version = "0.1.0"
 dependencies = [
  "bevy",
@@ -2613,7 +2613,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
- "board_plugin",
+ "board_plugin_lib",
 ]
 
 [[package]]
