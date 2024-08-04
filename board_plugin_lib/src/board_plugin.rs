@@ -1,4 +1,4 @@
-use crate::{components::*, resources::*, systems::*, util::*};
+use crate::{components::*, events::TileTriggerEvent, resources::*, systems::*, util::*};
 use bevy::{log, prelude::*, utils::HashMap};
 
 pub struct BoardPlugin;
@@ -7,6 +7,11 @@ impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, Self::create_board);
         app.add_systems(FixedUpdate, input_handling);
+        app.add_systems(FixedUpdate, read_tile_trigger_event);
+        app.add_systems(FixedUpdate, uncover_tiles);
+
+        app.add_event::<TileTriggerEvent>();
+
         log::info!("Loaded Board Plugin");
     }
 }
