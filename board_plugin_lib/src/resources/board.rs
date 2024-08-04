@@ -27,7 +27,7 @@ impl Board {
         let coordinates = position - self.bounds.position;
         Some(Coordinates {
             x: (coordinates.x / self.tile_size) as u16,
-            y: (coordinates.y / self.tile_size) as u16,
+            y: self.tile_map.height() - ((coordinates.y / self.tile_size) as u16) - 1,
         })
     }
 
