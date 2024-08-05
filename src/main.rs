@@ -11,8 +11,10 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, States)]
 pub enum AppState {
-    InGame,
+    Loading,
+    Loaded,
     Out,
+    InGame,
 }
 
 fn make_window_plugin() -> WindowPlugin {
@@ -51,6 +53,10 @@ fn state_handler(
     mut next_state: ResMut<NextState<AppState>>,
     mut key_event_reader: EventReader<KeyboardInput>,
 ) {
+    if state.get() == &AppState::Loaded {
+        next_state.set(AppState::InGame)
+    }
+
     for event in key_event_reader.read() {
         if let Key::Character(character) = &event.logical_key {
             match character.as_str() {
@@ -74,6 +80,49 @@ fn state_handler(
     }
 }
 
+fn setup_board(
+    mut commands: Commands,
+    mut next_state: ResMut<NextState<AppState>>,
+    asset_server: Res<AssetServer>,
+) {
+    // Board plugin options
+    commands.insert_resource(BoardOptions {
+        map_size: (20, 20),
+        bomb_count: 40,
+        tile_padding: 1.,
+        safe_start: true,
+        ..Default::default()
+    });
+    // Board assets
+    commands.insert_resource(BoardAssets {
+        label: "Default".to_string(),
+        board_material: SpriteMaterial {
+            color: Color::WHITE,
+            ..Default::default()
+        },
+        tile_material: SpriteMaterial {
+            color: Color::srgb_u8(40, 40, 40),
+            ..Default::default()
+        },
+        covered_tile_material: SpriteMaterial {
+            color: Color::srgb_u8(60, 60, 60),
+            ..Default::default()
+        },
+        bomb_number_font: asset_server.load("fonts/arial-rounded-mt-regular.ttf"),
+        bomb_number_colors: BoardAssets::default_bomb_number_colors(),
+        flag_material: SpriteMaterial {
+            texture: asset_server.load("sprites/flag.png"),
+            color: Color::WHITE,
+        },
+        bomb_material: SpriteMaterial {
+            texture: asset_server.load("sprites/bomb.png"),
+            color: Color::WHITE,
+        },
+    });
+    // Plugin activation
+    next_state.set(AppState::Loaded);
+}
+
 fn main() {
     let mut app = App::new();
 
@@ -87,7 +136,7 @@ fn main() {
     #[cfg(feature = "debug")]
     app.add_plugins(WorldInspectorPlugin::new());
 
-    app.insert_state(AppState::Out);
+    app.insert_state(AppState::Loading);
 
     app.insert_resource(BoardOptions {
         bomb_count: 40,
@@ -97,6 +146,7 @@ fn main() {
         ..default()
     });
 
+    app.add_systems(Startup, setup_board);
     app.add_systems(Startup, startup_camera_system);
     app.add_systems(Startup, iteration_system);
     app.add_systems(FixedUpdate, state_handler);
