@@ -5,11 +5,12 @@ use bevy::{
     prelude::*,
 };
 
-pub fn input_handling(
+pub fn input(
     windows: Query<&Window>,
     board: Res<Board>,
     mut button_event_reader: EventReader<MouseButtonInput>,
     mut tile_trigger_event_writer: EventWriter<TileTriggerEvent>,
+    mut tile_mark_event_writer: EventWriter<TileMarkEvent>,
 ) {
     let window = windows.get_single().unwrap();
 
@@ -37,6 +38,7 @@ pub fn input_handling(
                     }
                     MouseButton::Right => {
                         log::info!("Trying to mark tile on {}", tile_coordinates);
+                        tile_mark_event_writer.send(TileMarkEvent(tile_coordinates));
                     }
                     _ => {}
                 }

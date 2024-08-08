@@ -1,4 +1,10 @@
-use crate::{components::*, events::TileTriggerEvent, resources::*, systems::*, util::*};
+use crate::{
+    components::*,
+    events::{BoardCompletedEvent, BombExplosionEvent, TileMarkEvent, TileTriggerEvent},
+    resources::*,
+    systems::*,
+    util::*,
+};
 use bevy::{log, prelude::*, utils::HashMap};
 
 pub struct BoardPlugin<T> {
@@ -12,10 +18,13 @@ impl<T: States> Plugin for BoardPlugin<T> {
 
         app.add_systems(
             FixedUpdate,
-            (input_handling, read_tile_trigger_event, uncover_tiles)
+            (input, read_tile_trigger_event, mark_tiles, uncover_tiles)
                 .run_if(in_state(self.running_state.clone())),
         );
 
+        app.add_event::<BoardCompletedEvent>();
+        app.add_event::<BombExplosionEvent>();
+        app.add_event::<TileMarkEvent>();
         app.add_event::<TileTriggerEvent>();
 
         log::info!("Loaded Board Plugin");
@@ -118,6 +127,7 @@ impl<T> BoardPlugin<T> {
             tile_size,
             covered_tiles,
             entity: board_entity,
+            marked_tiles: Vec::new(),
         });
 
         if board_options.safe_start {

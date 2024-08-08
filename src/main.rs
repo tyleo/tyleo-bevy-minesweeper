@@ -105,7 +105,7 @@ fn setup_board(
             ..Default::default()
         },
         covered_tile_material: SpriteMaterial {
-            color: Color::srgb_u8(60, 60, 60),
+            color: Color::srgb_u8(100, 100, 100),
             ..Default::default()
         },
         bomb_number_font: asset_server.load("fonts/arial-rounded-mt-regular.ttf"),

@@ -1,4 +1,4 @@
-use crate::{components::*, resources::*};
+use crate::{components::*, events::*, resources::*};
 use bevy::{log, prelude::*};
 
 pub fn uncover_tiles(
@@ -6,6 +6,8 @@ pub fn uncover_tiles(
     mut board: ResMut<Board>,
     children: Query<(Entity, &Parent), With<Uncover>>,
     parents: Query<(&Coordinates, Option<&Bomb>, Option<&BombNeighbor>)>,
+    mut board_completed_event_writer: EventWriter<BoardCompletedEvent>,
+    mut bomb_explosion_event_writer: EventWriter<BombExplosionEvent>,
 ) {
     for (entity, parent) in children.iter() {
         commands.entity(entity).despawn_recursive();
@@ -24,9 +26,14 @@ pub fn uncover_tiles(
             Some(e) => log::debug!("Uncovered tile {} (entity: {:?})", coords, e),
         }
 
+        if board.is_completed() {
+            log::info!("Board completed");
+            board_completed_event_writer.send(BoardCompletedEvent);
+        }
+
         if bomb.is_some() {
             log::info!("Boom !");
-            // TODO: Add explosion event
+            bomb_explosion_event_writer.send(BombExplosionEvent);
         }
         // If the tile is empty..
         else if bomb_counter.is_none() {

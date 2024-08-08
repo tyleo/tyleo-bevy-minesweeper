@@ -4,9 +4,9 @@ use bevy::prelude::*;
 pub fn read_tile_trigger_event(
     mut commands: Commands,
     board: Res<Board>,
-    mut tile_trigger_evr: EventReader<TileTriggerEvent>,
+    mut tile_trigger_event_reader: EventReader<TileTriggerEvent>,
 ) {
-    for trigger_event in tile_trigger_evr.read() {
+    for trigger_event in tile_trigger_event_reader.read() {
         if let Some(entity) = board.tile_to_uncover(&trigger_event.0) {
             commands.entity(*entity).insert(Uncover);
         }
