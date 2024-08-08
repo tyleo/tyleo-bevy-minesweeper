@@ -8,10 +8,22 @@ default = []
 debug = ["board_plugin_lib/debug", "bevy-inspector-egui"]
 
 [dependencies]
-bevy = "0.14"
 board_plugin_lib = { version = "0.1.0", path = "board_plugin_lib" }
 
 bevy-inspector-egui = { version = "0.25", optional = true }
+
+# Engine
+[dependencies.bevy]
+version = "0.14.0"
+default-features = false
+features = ["bevy_render", "bevy_winit", "png"]
+
+# Dependencies for native only.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies.bevy]
+version = "0.14.0"
+default-features = false
+features = ["x11"]
+
 
 [workspace]
 members = ["board_plugin_lib"]
