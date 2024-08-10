@@ -9,7 +9,6 @@ debug = ["board_plugin_lib/debug", "bevy-inspector-egui"]
 
 [dependencies]
 board_plugin_lib = { version = "0.1.0", path = "board_plugin_lib" }
-
 bevy-inspector-egui = { version = "0.25", optional = true }
 
 # Engine
@@ -17,6 +16,31 @@ bevy-inspector-egui = { version = "0.25", optional = true }
 version = "0.14.0"
 default-features = false
 features = ["bevy_render", "bevy_winit", "png"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+# Enable more optimization in the release profile at the cost of compile time.
+[profile.release]
+# Compile the entire crate as one unit.
+# Slows compile times, marginal improvements.
+codegen-units = 1
+# Do a second optimization pass over the entire program, including dependencies.
+# Slows compile times, marginal improvements.
+lto = "thin"
+
+# Optimize for size in the wasm-release profile to reduce load times and bandwidth usage on web.
+[profile.release-wasm]
+# Default to release profile values.
+inherits = "release"
+# Optimize with size in mind (also try "z", sometimes it is better).
+# Slightly slows compile times, great improvements to file size and runtime performance.
+opt-level = "s"
+# Strip all debugging information from the binary to slightly reduce file size.
+strip = "debuginfo"
 
 # Dependencies for native only.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.bevy]

@@ -1,0 +1,14 @@
+{
+    "name": "tyleo-minesweeper-tutorial",
+    "version": "0.1.0",
+    "author": "tyleo",
+    "license": "MIT",
+    "type": "module",
+    "sideEffects": false,
+    "scripts": {
+        "build:release-wasm": "npm run build:cargo:release-wasm && build:wasm-bindgen:release-wasm",
+        "build:cargo:release-wasm": "cargo build --profile=release-wasm --target wasm32-unknown-unknown",
+        "build:wasm-bindgen:release-wasm": "wasm-bindgen --out-dir target/tyleo-minesweeper-tutorial/src --out-name minesweeper-tutorial target/wasm32-unknown-unknown/release-wasm/minesweeper-tutorial.wasm --target web --omit-default-module-path",
+        "serve": "cargo run --target wasm32-unknown-unknown"
+    }
+}
