@@ -6,6 +6,7 @@ edition = "2021"
 [features]
 default = []
 debug = ["board_plugin_lib/debug", "bevy-inspector-egui"]
+process_assets = ["bevy/asset_processor", "bevy/multi_threaded"]
 
 [dependencies]
 board_plugin_lib = { version = "0.1.0", path = "board_plugin_lib" }

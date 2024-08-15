@@ -17,22 +17,40 @@ pub enum AppState {
     InGame,
 }
 
-fn make_window_plugin() -> WindowPlugin {
+fn set_window_plugin(plugin_group: impl PluginGroup) -> PluginGroupBuilder {
     let primary_window = Window {
         title: "Mine Sweeper!".into(),
         resolution: (700., 800.).into(),
         ..default()
     };
 
-    WindowPlugin {
+    let window_plugin = WindowPlugin {
         primary_window: Some(primary_window),
         ..default()
-    }
+    };
+
+    plugin_group.set(window_plugin)
+}
+
+#[cfg(feature = "process_assets")]
+fn set_asset_plugin(plugin_group: impl PluginGroup) -> PluginGroupBuilder {
+    let asset_plugin = AssetPlugin {
+        mode: AssetMode::Processed,
+        ..default()
+    };
+
+    plugin_group.set(asset_plugin)
 }
 
 fn make_default_plugins() -> PluginGroupBuilder {
-    let window_plugin = make_window_plugin();
-    DefaultPlugins.set(window_plugin)
+    let default_plugins = DefaultPlugins;
+
+    let default_plugins = set_window_plugin(default_plugins);
+
+    #[cfg(feature = "process_assets")]
+    let default_plugins = set_asset_plugin(default_plugins);
+
+    default_plugins
 }
 
 fn startup_camera_system(mut commands: Commands) {
