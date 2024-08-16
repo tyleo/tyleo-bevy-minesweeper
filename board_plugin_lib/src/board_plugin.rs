@@ -18,7 +18,13 @@ impl<T: States> Plugin for BoardPlugin<T> {
 
         app.add_systems(
             FixedUpdate,
-            (input, read_tile_trigger_event, mark_tiles, uncover_tiles)
+            (
+                mouse_input,
+                touch_input,
+                read_tile_trigger_event,
+                mark_tiles,
+                uncover_tiles,
+            )
                 .run_if(in_state(self.running_state.clone())),
         );
 

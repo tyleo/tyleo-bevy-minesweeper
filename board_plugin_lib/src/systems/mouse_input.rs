@@ -5,7 +5,7 @@ use bevy::{
     prelude::*,
 };
 
-pub fn input(
+pub fn mouse_input(
     windows: Query<&Window>,
     board: Res<Board>,
     mut button_event_reader: EventReader<MouseButtonInput>,
