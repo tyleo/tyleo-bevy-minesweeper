@@ -149,7 +149,13 @@ fn setup_board(
     next_state.set(AppState::Loaded);
 }
 
-pub fn run(canvas_id_selector: Option<String>, resolution: Option<(f32, f32)>) {
+pub fn run(
+    canvas_id_selector: Option<String>,
+    resolution: Option<(f32, f32)>,
+    map_size: Option<(u16, u16)>,
+    tile_size: Option<(f32, f32)>,
+    tile_padding: Option<f32>,
+) {
     let mut app = App::new();
 
     app.register_types(TypeRegistry);
@@ -166,9 +172,15 @@ pub fn run(canvas_id_selector: Option<String>, resolution: Option<(f32, f32)>) {
 
     app.insert_resource(BoardOptions {
         bomb_count: 40,
-        map_size: (20, 20),
+        map_size: map_size.unwrap_or((20, 20)),
         safe_start: true,
-        tile_padding: 3.0,
+        tile_size: tile_size
+            .map(|tile_size| TileSizeOption::Adaptive {
+                min: tile_size.0,
+                max: tile_size.1,
+            })
+            .unwrap_or(default()),
+        tile_padding: tile_padding.unwrap_or(3.0),
         ..default()
     });
 
