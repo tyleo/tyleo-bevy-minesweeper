@@ -47,9 +47,6 @@ impl<T> BoardPlugin<T> {
         // Load assets
 
         // Create the tile map
-        let tile_map = TileMap::new_with_bombs(20, 20, 40);
-        #[cfg(feature = "debug")]
-        log::info!("{}", tile_map.console_output());
 
         let window = windows.get_single().unwrap();
 
@@ -57,6 +54,14 @@ impl<T> BoardPlugin<T> {
             None => BoardOptions::default(),
             Some(o) => o.clone(),
         };
+
+        let tile_map = TileMap::new_with_bombs(
+            board_options.map_size.0,
+            board_options.map_size.1,
+            board_options.bomb_count,
+        );
+        #[cfg(feature = "debug")]
+        log::info!("{}", tile_map.console_output());
 
         let tile_padding = board_options.tile_padding;
         let tile_size = match board_options.tile_size {

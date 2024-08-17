@@ -6,19 +6,37 @@ mod wasm {
     use wasm_bindgen::prelude::*;
 
     #[wasm_bindgen]
-    pub struct F32Bounds(pub f32, pub f32);
+    #[derive(Clone)]
+    pub struct F32Pair(pub f32, pub f32);
 
-    impl From<F32Bounds> for (f32, f32) {
-        fn from(value: F32Bounds) -> Self {
+    #[wasm_bindgen]
+    impl F32Pair {
+        #[wasm_bindgen(constructor)]
+        pub fn new(first: f32, second: f32) -> F32Pair {
+            F32Pair(first, second)
+        }
+    }
+
+    impl From<F32Pair> for (f32, f32) {
+        fn from(value: F32Pair) -> Self {
             (value.0, value.1)
         }
     }
 
     #[wasm_bindgen]
-    pub struct U16Bounds(pub u16, pub u16);
+    #[derive(Clone)]
+    pub struct U16Pair(pub u16, pub u16);
 
-    impl From<U16Bounds> for (u16, u16) {
-        fn from(value: U16Bounds) -> Self {
+    #[wasm_bindgen]
+    impl U16Pair {
+        #[wasm_bindgen(constructor)]
+        pub fn new(first: u16, second: u16) -> U16Pair {
+            U16Pair(first, second)
+        }
+    }
+
+    impl From<U16Pair> for (u16, u16) {
+        fn from(value: U16Pair) -> Self {
             (value.0, value.1)
         }
     }
@@ -26,9 +44,9 @@ mod wasm {
     #[wasm_bindgen]
     pub fn run(
         canvas_id_selector: String,
-        canvas_size: F32Bounds,
-        num_tiles: Option<U16Bounds>,
-        tile_size: Option<F32Bounds>,
+        canvas_size: F32Pair,
+        num_tiles: Option<U16Pair>,
+        tile_size: Option<F32Pair>,
         tile_padding: Option<f32>,
     ) {
         shared::run(

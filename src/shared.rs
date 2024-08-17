@@ -111,14 +111,6 @@ fn setup_board(
     mut next_state: ResMut<NextState<AppState>>,
     asset_server: Res<AssetServer>,
 ) {
-    // Board plugin options
-    commands.insert_resource(BoardOptions {
-        map_size: (20, 20),
-        bomb_count: 40,
-        tile_padding: 1.,
-        safe_start: true,
-        ..Default::default()
-    });
     // Board assets
     commands.insert_resource(BoardAssets {
         label: "Default".to_string(),
