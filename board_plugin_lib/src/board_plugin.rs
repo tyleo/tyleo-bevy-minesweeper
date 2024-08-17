@@ -96,6 +96,7 @@ impl<T> BoardPlugin<T> {
                 .insert(Transform::from_translation(board_position))
                 .insert(GlobalTransform::default())
                 .insert(InheritedVisibility::default())
+                .insert(TouchInterpretationComponent::default())
                 .with_children(|parent| {
                     // Spawn background
                     parent

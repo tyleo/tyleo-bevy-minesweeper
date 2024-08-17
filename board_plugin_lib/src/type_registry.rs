@@ -1,4 +1,4 @@
-use crate::{components::*, resources::*, util::RegisterTypes};
+use crate::{components::*, resources::*, util::*};
 use bevy::app::App;
 
 pub struct TypeRegistry;
@@ -10,9 +10,13 @@ impl RegisterTypes for TypeRegistry {
         app.register_type::<Bomb>();
         app.register_type::<BombNeighbor>();
         app.register_type::<Coordinates>();
+        app.register_type::<TouchInterpretationComponent>();
         app.register_type::<Uncover>();
 
         // Resources
         app.register_type::<BoardOptions>();
+
+        // Util
+        app.register_type::<TouchInterpretationData>();
     }
 }
