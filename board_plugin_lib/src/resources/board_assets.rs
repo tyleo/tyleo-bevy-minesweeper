@@ -11,6 +11,7 @@ pub struct BoardAssets {
     pub board_material: SpriteMaterial,
     pub tile_material: SpriteMaterial,
     pub covered_tile_material: SpriteMaterial,
+    pub pending_tile_material: SpriteMaterial,
     pub bomb_number_font: Handle<Font>,
     pub bomb_number_colors: Vec<Color>,
     pub flag_material: SpriteMaterial,

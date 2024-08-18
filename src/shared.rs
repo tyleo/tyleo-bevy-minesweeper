@@ -126,6 +126,10 @@ fn setup_board(
             color: Color::srgb_u8(59, 63, 68),
             ..Default::default()
         },
+        pending_tile_material: SpriteMaterial {
+            color: Color::srgb_u8(71, 75, 82),
+            ..Default::default()
+        },
         bomb_number_font: asset_server.load("fonts/arial-rounded-mt-regular.ttf"),
         bomb_number_colors: BoardAssets::default_bomb_number_colors(),
         flag_material: SpriteMaterial {

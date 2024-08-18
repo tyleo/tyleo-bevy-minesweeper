@@ -137,6 +137,7 @@ impl<T> BoardPlugin<T> {
                 size: board_size,
             },
             tile_size,
+            tile_padding,
             covered_tiles,
             entity: board_entity,
             marked_tiles: Vec::new(),
