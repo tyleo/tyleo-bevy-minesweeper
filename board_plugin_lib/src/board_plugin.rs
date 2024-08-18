@@ -20,7 +20,7 @@ impl<T: States> Plugin for BoardPlugin<T> {
             FixedUpdate,
             (
                 mouse_input,
-                touch_input,
+                touch_input::<_, TouchInputTouchInputDeps>,
                 read_tile_trigger_event,
                 mark_tiles,
                 uncover_tiles,
