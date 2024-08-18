@@ -234,6 +234,7 @@ impl<T> BoardPlugin<T> {
                         cmd.with_children(|parent| {
                             parent.spawn(SpriteBundle {
                                 sprite: Sprite {
+                                    color: board_assets.bomb_material.color,
                                     custom_size: Some(Vec2::splat(tile_size - tile_padding)),
                                     ..default()
                                 },

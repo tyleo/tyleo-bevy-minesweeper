@@ -115,26 +115,26 @@ fn setup_board(
     commands.insert_resource(BoardAssets {
         label: "Default".to_string(),
         board_material: SpriteMaterial {
-            color: Color::WHITE,
+            color: Color::srgb_u8(19, 20, 22),
             ..Default::default()
         },
         tile_material: SpriteMaterial {
-            color: Color::srgb_u8(40, 40, 40),
+            color: Color::srgb_u8(26, 27, 30),
             ..Default::default()
         },
         covered_tile_material: SpriteMaterial {
-            color: Color::srgb_u8(100, 100, 100),
+            color: Color::srgb_u8(59, 63, 68),
             ..Default::default()
         },
         bomb_number_font: asset_server.load("fonts/arial-rounded-mt-regular.ttf"),
         bomb_number_colors: BoardAssets::default_bomb_number_colors(),
         flag_material: SpriteMaterial {
             texture: asset_server.load("sprites/flag.png"),
-            color: Color::WHITE,
+            color: Color::srgb_u8(27, 167, 223),
         },
         bomb_material: SpriteMaterial {
             texture: asset_server.load("sprites/bomb.png"),
-            color: Color::WHITE,
+            color: Color::srgb_u8(241, 91, 80),
         },
     });
     // Plugin activation
@@ -175,6 +175,7 @@ pub fn run(
         tile_padding: tile_padding.unwrap_or(3.0),
         ..default()
     });
+    app.insert_resource(ClearColor(Color::srgb_u8(19, 20, 22)));
 
     app.add_systems(Startup, setup_board);
     app.add_systems(Startup, startup_camera_system);
