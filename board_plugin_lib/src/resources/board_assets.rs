@@ -1,5 +1,5 @@
 use crate::resources::*;
-use bevy::{color::palettes::css as color_palette, prelude::*};
+use bevy::prelude::*;
 
 /// Assets for the board. Must be used as a resource.
 ///
@@ -22,10 +22,10 @@ impl BoardAssets {
     pub fn default_bomb_number_colors() -> Vec<Color> {
         vec![
             Color::WHITE,
-            color_palette::GREEN.into(),
-            color_palette::YELLOW.into(),
-            color_palette::ORANGE.into(),
-            color_palette::PURPLE.into(),
+            Color::srgb_u8(64, 182, 73),  // green
+            Color::srgb_u8(228, 208, 32), // yellow
+            Color::srgb_u8(250, 131, 20), // orange
+            Color::srgb_u8(178, 21, 214), // purple
         ]
     }
 
