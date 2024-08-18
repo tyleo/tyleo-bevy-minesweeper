@@ -63,7 +63,7 @@ pub fn touch_input(
                     if let Some(tile_coordinates) = tile_coordinates {
                         let timestamp = time.elapsed_seconds();
                         let timespan = timestamp - touch_interpretation_data.timestamp;
-                        if timespan < 1.0 {
+                        if timespan < 0.5 {
                             log::info!("Trying to uncover tile on {}", tile_coordinates);
                             tile_trigger_event_writer.send(TileTriggerEvent(tile_coordinates));
                         }
@@ -79,7 +79,7 @@ pub fn touch_input(
     let mark_tile = if let Some(ref touch_interpretation_data) = touch_interpreter.data {
         let timestamp = time.elapsed_seconds();
         let timespan = timestamp - touch_interpretation_data.timestamp;
-        timespan >= 1.0
+        timespan >= 0.5
     } else {
         false
     };
