@@ -147,8 +147,8 @@ pub fn touch_input<E: Event, D: TouchInputDeps<E>>(
                 }
                 TouchState::Other => {
                     if let Some(ref mut touch_interpretation_data) = &mut touch_interpreter.data {
-                        if (touch_interpretation_data.x != tile_coordinates.x
-                            || touch_interpretation_data.y != tile_coordinates.y)
+                        if touch_interpretation_data.x != tile_coordinates.x
+                            || touch_interpretation_data.y != tile_coordinates.y
                         {
                             touch_interpretation_data.x = tile_coordinates.x;
                             touch_interpretation_data.y = tile_coordinates.y;
@@ -174,8 +174,8 @@ pub fn touch_input<E: Event, D: TouchInputDeps<E>>(
 
         if let Some(tile_coordinates) = tile_coordinates {
             if let Some(ref mut touch_interpretation_data) = &mut touch_interpreter.data {
-                if (touch_interpretation_data.x != tile_coordinates.x
-                    || touch_interpretation_data.y != tile_coordinates.y)
+                if touch_interpretation_data.x != tile_coordinates.x
+                    || touch_interpretation_data.y != tile_coordinates.y
                 {
                     touch_interpretation_data.x = tile_coordinates.x;
                     touch_interpretation_data.y = tile_coordinates.y;

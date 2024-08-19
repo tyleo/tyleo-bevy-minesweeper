@@ -1,40 +1,10 @@
-[package]
-name = "minesweeper-tutorial"
-version = "0.1.0"
-edition = "2021"
-
-[[bin]]
-name = "minesweeper-tutorial"
-path = "src/main.rs"
-
-[lib]
-name = "minesweeper_tutorial"
-path = "src/lib.rs"
-crate-type = ["cdylib"]
-
-[features]
-default = []
-debug = ["board_plugin_lib/debug", "bevy-inspector-egui"]
-process_assets = ["bevy/asset_processor", "bevy/multi_threaded"]
-
-[dependencies]
-board_plugin_lib = { version = "0.1.0", path = "board_plugin_lib" }
-bevy-inspector-egui = { version = "0.25", optional = true }
-
-[dependencies.bevy]
-# Engine
-version = "0.14.0"
-default-features = false
-features = ["bevy_render", "bevy_winit", "png"]
-
-# Dependencies for native only.
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies.bevy]
-version = "0.14.0"
-default-features = false
-features = ["x11"]
-
-[target.'cfg(target_arch = "wasm32")'.dependencies.wasm-bindgen]
-version = "0.2.92"
+[workspace]
+resolver = "2"
+members = [
+    "projects/board_plugin_lib",
+    "projects/minesweeper_bin",
+    "projects/minesweeper_lib",
+]
 
 [profile.dev]
 opt-level = 1
@@ -60,6 +30,3 @@ inherits = "release"
 opt-level = "s"
 # Strip all debugging information from the binary to slightly reduce file size.
 strip = "debuginfo"
-
-[workspace]
-members = ["board_plugin_lib"]

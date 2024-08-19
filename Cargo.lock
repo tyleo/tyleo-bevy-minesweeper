@@ -2207,7 +2207,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "minesweeper-tutorial"
+name = "minesweeper_bin"
+version = "0.1.0"
+dependencies = [
+ "minesweeper_lib",
+]
+
+[[package]]
+name = "minesweeper_lib"
 version = "0.1.0"
 dependencies = [
  "bevy",

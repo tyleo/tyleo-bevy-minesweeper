@@ -1,8 +1,10 @@
-mod shared;
+mod native_run;
+
+pub use native_run::native_run;
 
 #[cfg(target_arch = "wasm32")]
 mod wasm {
-    use crate::shared;
+    use crate::native_run;
     use wasm_bindgen::prelude::*;
 
     #[wasm_bindgen]
@@ -49,7 +51,7 @@ mod wasm {
         tile_size: Option<F32Pair>,
         tile_padding: Option<f32>,
     ) {
-        shared::run(
+        native_run(
             Some(canvas_id_selector),
             Some(canvas_size.into()),
             num_tiles.map(|num_tiles| num_tiles.into()),

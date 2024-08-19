@@ -145,7 +145,7 @@ fn setup_board(
     next_state.set(AppState::Loaded);
 }
 
-pub fn run(
+pub fn native_run(
     canvas_id_selector: Option<String>,
     resolution: Option<(f32, f32)>,
     map_size: Option<(u16, u16)>,
