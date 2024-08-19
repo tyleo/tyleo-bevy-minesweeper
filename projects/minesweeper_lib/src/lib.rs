@@ -4,7 +4,7 @@ pub mod ext;
 pub mod resources;
 pub mod systems;
 pub mod util;
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 pub mod wasm;
 
 mod board_plugin;

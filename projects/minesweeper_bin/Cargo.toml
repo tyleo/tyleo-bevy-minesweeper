@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-minesweeper_lib = { version = "0.1.0", path = "../minesweeper_lib" }
+minesweeper_lib = { version = "0.1.0", path = "../minesweeper_lib", features = [
+    "native",
+] }
 
 [features]
-default = []
 debug = ["minesweeper_lib/debug"]
 process_assets = ["minesweeper_lib/process_assets"]

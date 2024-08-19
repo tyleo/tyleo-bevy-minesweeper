@@ -1,7 +1,8 @@
 {
     "rust-analyzer.cargo.features": [
         "debug",
+        "wasm"
     ],
-    // This can break the compiler
+    // This can break the analyzer. Prefer `--features wasm` instead.
     // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
 }

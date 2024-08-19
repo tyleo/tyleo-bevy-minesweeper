@@ -9,7 +9,7 @@
         "debug": "cargo run --package minesweeper_bin --features debug",
         "build:assets": "cargo run --package minesweeper_bin --features process_assets",
         "build:release-wasm": "npm run build:cargo:release-wasm && npm run build:wasm-bindgen:release-wasm",
-        "build:cargo:release-wasm": "cargo build --package minesweeper_lib --profile=release-wasm --target wasm32-unknown-unknown",
+        "build:cargo:release-wasm": "cargo build --package minesweeper_lib --features wasm --profile=release-wasm --target wasm32-unknown-unknown",
         "build:wasm-bindgen:release-wasm": "wasm-bindgen target/wasm32-unknown-unknown/release-wasm/minesweeper_lib.wasm --out-dir target/tyleo-minesweeper-tutorial/src --out-name minesweeper-tutorial --target web --omit-default-module-path",
         "serve": "cargo run --target wasm32-unknown-unknown"
     }
