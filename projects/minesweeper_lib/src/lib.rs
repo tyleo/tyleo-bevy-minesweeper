@@ -8,9 +8,11 @@ pub mod util;
 pub mod wasm;
 
 mod board_plugin;
+mod config;
 mod run;
 mod type_registry;
 
 pub use board_plugin::*;
+pub use config::*;
 pub use run::*;
 pub use type_registry::*;
