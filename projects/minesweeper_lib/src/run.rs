@@ -1,21 +1,13 @@
+use crate::{components::*, ext::*, resources::*, util::*, BoardPlugin, TypeRegistry};
 use bevy::{
     app::PluginGroupBuilder,
     input::keyboard::{Key, KeyboardInput},
     log,
     prelude::*,
 };
-use board_plugin_lib::{components::*, ext::*, resources::*, BoardPlugin, TypeRegistry};
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash, States)]
-pub enum AppState {
-    Loading,
-    Loaded,
-    Out,
-    InGame,
-}
 
 fn set_window_plugin(
     plugin_group: impl PluginGroup,
@@ -145,7 +137,7 @@ fn setup_board(
     next_state.set(AppState::Loaded);
 }
 
-pub fn native_run(
+pub fn run(
     canvas_id_selector: Option<String>,
     resolution: Option<(f32, f32)>,
     map_size: Option<(u16, u16)>,

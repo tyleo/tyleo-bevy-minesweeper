@@ -9,4 +9,4 @@ minesweeper_lib = { version = "0.1.0", path = "../minesweeper_lib" }
 [features]
 default = []
 debug = ["minesweeper_lib/debug"]
-process_assets = ["minesweeper_lib/debug"]
+process_assets = ["minesweeper_lib/process_assets"]
