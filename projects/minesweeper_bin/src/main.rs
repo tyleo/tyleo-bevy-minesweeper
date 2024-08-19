@@ -1,5 +1,5 @@
-use minesweeper_lib;
+use minesweeper_lib::run;
 
 fn main() {
-    minesweeper_lib::native_run(None, None, None, None, None);
+    run(None, None, None, None, None);
 }

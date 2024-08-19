@@ -2,5 +2,6 @@
     "rust-analyzer.cargo.features": [
         "debug",
     ],
-    "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+    // This can break the compiler
+    // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
 }
