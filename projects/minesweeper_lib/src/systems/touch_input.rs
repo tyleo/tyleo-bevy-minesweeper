@@ -62,6 +62,7 @@ impl TouchInputDeps<MouseButtonInput> for MouseButtonInputTouchInputDeps {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn touch_input<E: Event, D: TouchInputDeps<E>>(
     mut commands: Commands,
     windows: Query<&Window>,
