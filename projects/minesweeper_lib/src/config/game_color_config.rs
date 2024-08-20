@@ -1,3 +1,4 @@
+use crate::resources::BoardColors;
 #[cfg(feature = "wasm")]
 mod internal {
     use crate::config::U8ColorConfig;
@@ -84,3 +85,51 @@ mod internal {
 }
 
 pub use internal::*;
+
+impl From<GameColorConfig> for BoardColors {
+    fn from(value: GameColorConfig) -> Self {
+        let default = BoardColors::default();
+
+        Self {
+            background_color: value
+                .background_color
+                .map(|c| c.into())
+                .unwrap_or(default.background_color),
+
+            padding_color: value
+                .padding_color
+                .map(|c| c.into())
+                .unwrap_or(default.padding_color),
+
+            unknown_tile_color: value
+                .unknown_tile_color
+                .map(|c| c.into())
+                .unwrap_or(default.unknown_tile_color),
+
+            revealed_tile_color: value
+                .revealed_tile_color
+                .map(|c| c.into())
+                .unwrap_or(default.revealed_tile_color),
+
+            highlighted_tile_color: value
+                .highlighted_tile_color
+                .map(|c| c.into())
+                .unwrap_or(default.highlighted_tile_color),
+
+            flag_color: value
+                .flag_color
+                .map(|c| c.into())
+                .unwrap_or(default.flag_color),
+
+            bomb_color: value
+                .bomb_color
+                .map(|c| c.into())
+                .unwrap_or(default.bomb_color),
+
+            number_colors: value
+                .number_colors
+                .map(|c| c.into_iter().map(|c| c.into()).collect())
+                .unwrap_or(default.number_colors),
+        }
+    }
+}

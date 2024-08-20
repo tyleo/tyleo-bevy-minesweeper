@@ -1,10 +1,10 @@
 #[cfg(feature = "wasm")]
 mod internal {
-    use crate::config::{GameColorConfig, U16Vec2Config, Vec2Config};
+    use crate::config::{F32ClampConfig, GameColorConfig, U16Vec2Config, Vec2Config};
     use wasm_bindgen::prelude::*;
 
     #[wasm_bindgen]
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Default, Clone)]
     pub struct GameConfig {
         /// The number of bombs on the map
         #[wasm_bindgen(skip)]
@@ -20,7 +20,7 @@ mod internal {
 
         /// The resolution of the game
         #[wasm_bindgen(skip)]
-        pub resolution: Vec2Config,
+        pub resolution: Option<Vec2Config>,
 
         /// The number of tiles in the map
         #[wasm_bindgen(skip)]
@@ -32,7 +32,7 @@ mod internal {
 
         /// The minimum and maximum tile size
         #[wasm_bindgen(skip)]
-        pub tile_size: Option<U16Vec2Config>,
+        pub tile_size: Option<F32ClampConfig>,
     }
 
     #[wasm_bindgen]
@@ -42,10 +42,10 @@ mod internal {
             bomb_count: Option<u16>,
             canvas_id_selector: Option<String>,
             color_config: Option<GameColorConfig>,
-            resolution: Vec2Config,
+            resolution: Option<Vec2Config>,
             tile_count: Option<U16Vec2Config>,
             tile_padding_size: Option<f32>,
-            tile_size: Option<U16Vec2Config>,
+            tile_size: Option<F32ClampConfig>,
         ) -> Self {
             Self {
                 bomb_count,
@@ -62,9 +62,9 @@ mod internal {
 
 #[cfg(not(feature = "wasm"))]
 mod internal {
-    use crate::config::{GameColorConfig, U16Vec2Config, Vec2Config};
+    use crate::config::{F32ClampConfig, GameColorConfig, U16Vec2Config, Vec2Config};
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Default, Clone)]
     pub struct GameConfig {
         /// The number of bombs on the map
         pub bomb_count: Option<u16>,
@@ -76,7 +76,7 @@ mod internal {
         pub color_config: Option<GameColorConfig>,
 
         /// The resolution of the game
-        pub resolution: Vec2Config,
+        pub resolution: Option<Vec2Config>,
 
         /// The number of tiles in the map
         pub tile_count: Option<U16Vec2Config>,
@@ -85,7 +85,7 @@ mod internal {
         pub tile_padding_size: Option<f32>,
 
         /// The minimum and maximum tile size
-        pub tile_size: Option<U16Vec2Config>,
+        pub tile_size: Option<F32ClampConfig>,
     }
 }
 

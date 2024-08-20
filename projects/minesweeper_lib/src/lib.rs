@@ -5,8 +5,6 @@ pub mod ext;
 pub mod resources;
 pub mod systems;
 pub mod util;
-#[cfg(feature = "wasm")]
-pub mod wasm;
 
 mod board_plugin;
 mod run;

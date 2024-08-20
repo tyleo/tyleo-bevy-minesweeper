@@ -23,6 +23,9 @@ pub struct BoardOptions {
 
     /// Does the board generate a safe place to start
     pub safe_start: bool,
+
+    /// The colors of the board
+    pub colors: BoardColors,
 }
 
 impl Default for BoardOptions {
@@ -34,6 +37,7 @@ impl Default for BoardOptions {
             tile_size: default(),
             tile_padding: 0.,
             safe_start: false,
+            colors: default(),
         }
     }
 }

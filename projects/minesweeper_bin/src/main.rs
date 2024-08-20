@@ -1,5 +1,5 @@
-use minesweeper_lib::run;
+use minesweeper_lib::{config::GameConfig, run};
 
 fn main() {
-    run(None, None, None, None, None);
+    run(GameConfig::default());
 }

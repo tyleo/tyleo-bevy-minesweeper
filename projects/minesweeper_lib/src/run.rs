@@ -1,4 +1,6 @@
-use crate::{components::*, ext::*, resources::*, util::*, BoardPlugin, TypeRegistry};
+use crate::{
+    components::*, config::GameConfig, ext::*, resources::*, util::*, BoardPlugin, TypeRegistry,
+};
 use bevy::{
     app::PluginGroupBuilder,
     input::keyboard::{Key, KeyboardInput},
@@ -9,15 +11,18 @@ use bevy::{
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
+
 fn set_window_plugin(
     plugin_group: impl PluginGroup,
     canvas_id_selector: Option<String>,
-    resolution: Option<(f32, f32)>,
+    resolution: Option<Vec2>,
 ) -> PluginGroupBuilder {
     let primary_window = Window {
         canvas: canvas_id_selector,
         title: "Mine Sweeper!".into(),
-        resolution: resolution.unwrap_or((700., 800.)).into(),
+        resolution: resolution.unwrap_or(Vec2::new(700., 800.)).into(),
         ..default()
     };
 
@@ -41,7 +46,7 @@ fn set_asset_plugin(plugin_group: impl PluginGroup) -> PluginGroupBuilder {
 
 fn make_default_plugins(
     canvas_id_selector: Option<String>,
-    resolution: Option<(f32, f32)>,
+    resolution: Option<Vec2>,
 ) -> PluginGroupBuilder {
     let default_plugins = DefaultPlugins;
 
@@ -101,54 +106,53 @@ fn state_handler(
 fn setup_board(
     mut commands: Commands,
     mut next_state: ResMut<NextState<AppState>>,
+    board_options: Res<BoardOptions>,
     asset_server: Res<AssetServer>,
 ) {
     // Board assets
     commands.insert_resource(BoardAssets {
         label: "Default".to_string(),
         board_material: SpriteMaterial {
-            color: Color::srgb_u8(19, 20, 22),
+            color: board_options.colors.padding_color,
             ..Default::default()
         },
         tile_material: SpriteMaterial {
-            color: Color::srgb_u8(26, 27, 30),
+            color: board_options.colors.revealed_tile_color,
             ..Default::default()
         },
         covered_tile_material: SpriteMaterial {
-            color: Color::srgb_u8(59, 63, 68),
+            color: board_options.colors.unknown_tile_color,
             ..Default::default()
         },
         pending_tile_material: SpriteMaterial {
-            color: Color::srgb_u8(71, 75, 82),
+            color: board_options.colors.highlighted_tile_color,
             ..Default::default()
         },
         bomb_number_font: asset_server.load("fonts/arial-rounded-mt-regular.ttf"),
-        bomb_number_colors: BoardAssets::default_bomb_number_colors(),
+        bomb_number_colors: board_options.colors.number_colors.clone(),
         flag_material: SpriteMaterial {
             texture: asset_server.load("sprites/flag.png"),
-            color: Color::srgb_u8(27, 167, 223),
+            color: board_options.colors.flag_color,
         },
         bomb_material: SpriteMaterial {
             texture: asset_server.load("sprites/bomb.png"),
-            color: Color::srgb_u8(241, 91, 80),
+            color: board_options.colors.bomb_color,
         },
     });
     // Plugin activation
     next_state.set(AppState::Loaded);
 }
 
-pub fn run(
-    canvas_id_selector: Option<String>,
-    resolution: Option<(f32, f32)>,
-    map_size: Option<(u16, u16)>,
-    tile_size: Option<(f32, f32)>,
-    tile_padding: Option<f32>,
-) {
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
+pub fn run(config: GameConfig) {
     let mut app = App::new();
 
     app.register_types(TypeRegistry);
 
-    app.add_plugins(make_default_plugins(canvas_id_selector, resolution));
+    app.add_plugins(make_default_plugins(
+        config.canvas_id_selector,
+        config.resolution.map(|resolution| resolution.into()),
+    ));
     app.add_plugins(BoardPlugin {
         running_state: AppState::InGame,
     });
@@ -158,20 +162,30 @@ pub fn run(
 
     app.insert_state(AppState::Loading);
 
+    let colors: BoardColors = config
+        .color_config
+        .map(|color_config| color_config.into())
+        .unwrap_or_default();
+
+    app.insert_resource(ClearColor(colors.background_color));
     app.insert_resource(BoardOptions {
-        bomb_count: 40,
-        map_size: map_size.unwrap_or((20, 20)),
+        bomb_count: config.bomb_count.unwrap_or(40),
+        map_size: config
+            .tile_count
+            .map(|tile_count| (tile_count.x, tile_count.y))
+            .unwrap_or((20, 20)),
         safe_start: true,
-        tile_size: tile_size
+        tile_size: config
+            .tile_size
             .map(|tile_size| TileSizeOption::Adaptive {
-                min: tile_size.0,
-                max: tile_size.1,
+                min: tile_size.min,
+                max: tile_size.max,
             })
             .unwrap_or(default()),
-        tile_padding: tile_padding.unwrap_or(3.0),
+        tile_padding: config.tile_padding_size.unwrap_or(3.0),
+        colors,
         ..default()
     });
-    app.insert_resource(ClearColor(Color::srgb_u8(19, 20, 22)));
 
     app.add_systems(Startup, setup_board);
     app.add_systems(Startup, startup_camera_system);
