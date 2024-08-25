@@ -138,6 +138,18 @@ pub fn touch_input<E: Event, D: TouchInputDeps<E>>(
                         if timespan < 0.5 {
                             log::info!("Trying to uncover tile on {}", tile_coordinates);
                             tile_trigger_event_writer.send(TileTriggerEvent(tile_coordinates));
+                        } else {
+                            let tile_coordinates = Coordinates {
+                                x: touch_interpretation_data.x,
+                                y: touch_interpretation_data.y,
+                            };
+
+                            commands
+                                .entity(touch_interpretation_data.cover_entity)
+                                .despawn_recursive();
+
+                            log::info!("Trying to mark tile on {}", tile_coordinates);
+                            tile_mark_event_writer.send(TileMarkEvent(tile_coordinates));
                         }
 
                         // Destroy the entity which covers the tile
@@ -200,29 +212,4 @@ pub fn touch_input<E: Event, D: TouchInputDeps<E>>(
             }
         }
     }
-
-    touch_interpreter.data =
-        if let Some(touch_interpretation_data) = std::mem::take(&mut touch_interpreter.data) {
-            let timestamp = time.elapsed_seconds();
-            let timespan = timestamp - touch_interpretation_data.timestamp;
-            if timespan >= 0.5 {
-                let tile_coordinates = Coordinates {
-                    x: touch_interpretation_data.x,
-                    y: touch_interpretation_data.y,
-                };
-
-                commands
-                    .entity(touch_interpretation_data.cover_entity)
-                    .despawn_recursive();
-
-                log::info!("Trying to mark tile on {}", tile_coordinates);
-                tile_mark_event_writer.send(TileMarkEvent(tile_coordinates));
-
-                None
-            } else {
-                Some(touch_interpretation_data)
-            }
-        } else {
-            None
-        };
 }
