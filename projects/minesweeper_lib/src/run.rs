@@ -1,5 +1,10 @@
 use crate::{
-    components::*, config::GameConfig, ext::*, resources::*, util::*, BoardPlugin, TypeRegistry,
+    components::*,
+    config::{GameConfig, Vec2Config},
+    ext::*,
+    resources::*,
+    util::*,
+    BoardPlugin, TypeRegistry,
 };
 use bevy::{
     app::PluginGroupBuilder,
@@ -17,12 +22,12 @@ use wasm_bindgen::prelude::*;
 fn set_window_plugin(
     plugin_group: impl PluginGroup,
     canvas_id_selector: Option<String>,
-    resolution: Option<Vec2>,
+    resolution: Vec2,
 ) -> PluginGroupBuilder {
     let primary_window = Window {
         canvas: canvas_id_selector,
         title: "Mine Sweeper!".into(),
-        resolution: resolution.unwrap_or(Vec2::new(700., 800.)).into(),
+        resolution: resolution.into(),
         ..default()
     };
 
@@ -46,7 +51,7 @@ fn set_asset_plugin(plugin_group: impl PluginGroup) -> PluginGroupBuilder {
 
 fn make_default_plugins(
     canvas_id_selector: Option<String>,
-    resolution: Option<Vec2>,
+    resolution: Vec2,
 ) -> PluginGroupBuilder {
     let default_plugins = DefaultPlugins;
 
@@ -145,13 +150,17 @@ fn setup_board(
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn run(config: GameConfig) {
+    let resolution = config.resolution.unwrap_or(Vec2Config { x: 700., y: 800. });
+
+    set_canvas_size(resolution.clone());
+
     let mut app = App::new();
 
     app.register_types(TypeRegistry);
 
     app.add_plugins(make_default_plugins(
         config.canvas_id_selector,
-        config.resolution.map(|resolution| resolution.into()),
+        resolution.into(),
     ));
     app.add_plugins(BoardPlugin {
         running_state: AppState::InGame,
