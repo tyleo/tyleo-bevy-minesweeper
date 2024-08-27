@@ -10,7 +10,10 @@ pub struct Board {
     pub tile_padding: f32,
     pub covered_tiles: HashMap<Coordinates, Entity>,
     pub entity: Entity,
+    pub background_entity: Entity,
+    pub entities: Vec<TileEntities>,
     pub marked_tiles: Vec<Coordinates>,
+    pub canvas_size: Vec2,
 }
 
 impl Board {

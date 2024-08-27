@@ -17,6 +17,7 @@ impl RegisterTypes for TypeRegistry {
         app.register_type::<BoardOptions>();
 
         // Util
+        app.register_type::<TileEntities>();
         app.register_type::<TouchInterpretationData>();
     }
 }

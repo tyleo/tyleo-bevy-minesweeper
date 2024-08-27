@@ -1,5 +1,5 @@
 use crate::resources::*;
-use bevy::prelude::*;
+use bevy::{math::U16Vec2, prelude::*};
 use serde::{Deserialize, Serialize};
 
 /// Board generation options which must be used as a resource
@@ -26,6 +26,39 @@ pub struct BoardOptions {
 
     /// The colors of the board
     pub colors: BoardColors,
+}
+
+impl BoardOptions {
+    pub fn compute_tile_size(&self, window_size: &Vec2, tile_map_size: U16Vec2) -> f32 {
+        match self.tile_size {
+            TileSizeOption::Fixed(v) => v,
+            TileSizeOption::Adaptive { min, max } => {
+                Self::compute_adaptive_tile_size(window_size, &(min, max), tile_map_size)
+            }
+        }
+    }
+
+    /// Computes a tile size that matches the window according to the tile map size
+    fn compute_adaptive_tile_size(
+        window_size: &Vec2,
+        (min, max): &(f32, f32),
+        tile_map_size: U16Vec2,
+    ) -> f32 {
+        let width = tile_map_size.x as f32;
+        let height = tile_map_size.y as f32;
+
+        let max_width = window_size.x / width;
+        let max_height = window_size.y / height;
+
+        max_width.min(max_height).clamp(*min, *max)
+    }
+
+    pub fn optional_resource_or_default(v: Option<Res<BoardOptions>>) -> BoardOptions {
+        match v {
+            None => BoardOptions::default(),
+            Some(o) => o.clone(),
+        }
+    }
 }
 
 impl Default for BoardOptions {
