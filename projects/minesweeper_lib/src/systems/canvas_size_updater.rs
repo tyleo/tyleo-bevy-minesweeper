@@ -1,7 +1,8 @@
 use crate::{
     components::Coordinates,
+    config::Vec2Config,
     resources::{Board, BoardOptions, BoardPositionOption},
-    util::get_canvas_size,
+    util::{get_canvas_size, set_canvas_size},
 };
 use bevy::{ecs::query::QueryEntityError, log, math::U16Vec2, prelude::*};
 
@@ -14,18 +15,39 @@ pub fn canvas_size_updater(
     mut sprites: Query<&mut Sprite>,
     mut texts: Query<Option<&mut Text>>,
 ) -> Result<(), QueryEntityError> {
-    let canvas_size = get_canvas_size().unwrap();
-    if board.canvas_size == canvas_size {
-        return Ok(());
+    {
+        // `board.canvas_size`, `get_canvas_size()`, and `window.resolution.size()`
+        // all need to be the same
+
+        let board_canvas_size = board.canvas_size;
+        let canvas_size = get_canvas_size().unwrap();
+        let window_resolution_size = { windows.get_single().unwrap().resolution.size() };
+
+        if board_canvas_size == canvas_size && board_canvas_size == window_resolution_size {
+            // All of the sizes are equal, return.
+            return Ok(());
+        } else if board_canvas_size == canvas_size && board_canvas_size != window_resolution_size {
+            log::info!("Updating `set_canvas_size()` to {}", window_resolution_size);
+
+            // The window resolution changed, set the canvas size
+            set_canvas_size(Vec2Config {
+                x: window_resolution_size.x,
+                y: window_resolution_size.y,
+            });
+
+            // Set the board canvas size
+            board.canvas_size = window_resolution_size;
+        } else if board_canvas_size != canvas_size {
+            log::info!("Updating `window.resolution.size()` to {}", canvas_size);
+
+            // The canvas size was changed, set the window size
+            let mut window = windows.get_single_mut().unwrap();
+            window.resolution.set(canvas_size.x, canvas_size.y);
+
+            // Set the board canvas size
+            board.canvas_size = canvas_size;
+        }
     }
-
-    log::info!("Updating board size to {}", canvas_size);
-
-    let mut window = windows.get_single_mut().unwrap();
-    window.resolution.set(canvas_size.x, canvas_size.y);
-
-    // Set the board canvas size
-    board.canvas_size = canvas_size;
 
     let board_options = BoardOptions::optional_resource_or_default(board_options);
 
