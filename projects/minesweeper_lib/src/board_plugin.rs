@@ -36,9 +36,12 @@ impl<T: States> Plugin for BoardPlugin<T> {
 
         app.add_systems(
             Update,
-            canvas_size_updater
-                .pipe(error_handler)
-                .run_if(in_state(self.running_state.clone())),
+            (
+                update_canvas_size_from_window,
+                canvas_size_updater
+                    .pipe(error_handler)
+                    .run_if(in_state(self.running_state.clone())),
+            ),
         );
 
         app.add_event::<BoardCompletedEvent>();
