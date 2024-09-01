@@ -3,7 +3,7 @@ use crate::{
     resources::{Board, BoardOptions, BoardPositionOption},
     util::get_canvas_size,
 };
-use bevy::{ecs::query::QueryEntityError, math::U16Vec2, prelude::*};
+use bevy::{ecs::query::QueryEntityError, log, math::U16Vec2, prelude::*};
 
 pub fn canvas_size_updater(
     mut board: ResMut<Board>,
@@ -19,6 +19,8 @@ pub fn canvas_size_updater(
         return Ok(());
     }
 
+    log::info!("Updating board size to {}", canvas_size);
+
     let mut window = windows.get_single_mut().unwrap();
     window.resolution.set(canvas_size.x, canvas_size.y);
 
@@ -32,11 +34,13 @@ pub fn canvas_size_updater(
         &board.canvas_size,
         U16Vec2::new(board.tile_map.width(), board.tile_map.height()),
     );
+    log::info!("Updating tile_size to {}", tile_size);
 
     let board_size = Vec2::new(
         board.tile_map.width() as f32 * tile_size,
         board.tile_map.height() as f32 * tile_size,
     );
+    log::info!("Updating board_size to {}", board_size);
 
     let board_position = match board_options.position {
         BoardPositionOption::Centered { offset } => {
@@ -44,6 +48,7 @@ pub fn canvas_size_updater(
         }
         BoardPositionOption::Custom(p) => p,
     };
+    log::info!("Updating board_position to {}", board_position);
 
     let mut board_transform = transforms.get_mut(board.entity)?;
     *board_transform = Transform::from_translation(board_position);
@@ -67,8 +72,9 @@ pub fn canvas_size_updater(
         let mut root_sprite = sprites.get_mut(entity.root)?;
         root_sprite.custom_size = Some(Vec2::splat(tile_size - tile_padding));
 
-        let mut cover_sprite = sprites.get_mut(entity.cover)?;
-        cover_sprite.custom_size = Some(Vec2::splat(tile_size - tile_padding));
+        if let Ok(mut cover_sprite) = sprites.get_mut(entity.cover) {
+            cover_sprite.custom_size = Some(Vec2::splat(tile_size - tile_padding));
+        }
 
         if let Some(kind) = entity.kind {
             if let Some(mut kind_text) = texts.get_mut(kind)? {
