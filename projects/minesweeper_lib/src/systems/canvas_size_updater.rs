@@ -2,7 +2,7 @@ use crate::{
     components::Coordinates,
     config::Vec2Config,
     resources::{Board, BoardOptions, BoardPositionOption},
-    util::{get_canvas_size, set_canvas_size},
+    util::{get_canvas_size, set_canvas_size, Bounds2},
 };
 use bevy::{ecs::query::QueryEntityError, log, math::U16Vec2, prelude::*};
 
@@ -57,6 +57,7 @@ pub fn canvas_size_updater(
         U16Vec2::new(board.tile_map.width(), board.tile_map.height()),
     );
     log::info!("Updating tile_size to {}", tile_size);
+    board.tile_size = tile_size;
 
     let board_size = Vec2::new(
         board.tile_map.width() as f32 * tile_size,
@@ -71,6 +72,11 @@ pub fn canvas_size_updater(
         BoardPositionOption::Custom(p) => p,
     };
     log::info!("Updating board_position to {}", board_position);
+
+    board.bounds = Bounds2 {
+        position: board_position.xy(),
+        size: board_size,
+    };
 
     let mut board_transform = transforms.get_mut(board.entity)?;
     *board_transform = Transform::from_translation(board_position);
