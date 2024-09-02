@@ -50,6 +50,13 @@ impl<T: States> Plugin for BoardPlugin2<T> {
     }
 }
 
+struct SpawnTilesReturn {
+    board_children: Vec<Entity>,
+    board_entities: Vec<TileEntities>,
+    covered_tiles: HashMap<Coordinates, Entity>,
+    safe_start_entity: Option<Entity>,
+}
+
 impl<T> BoardPlugin2<T> {
     pub fn create_board(
         mut commands: Commands,
@@ -57,14 +64,11 @@ impl<T> BoardPlugin2<T> {
         windows: Query<&Window>,
         board_assets: Res<BoardAssets>,
     ) {
-        // Load assets
-
-        // Create the tile map
-
         let window = windows.get_single().unwrap();
 
         let board_options = BoardOptions::optional_resource_or_default(board_options);
 
+        // Create the tile map
         let tile_map = TileMap::new_with_bombs(
             board_options.map_size.0,
             board_options.map_size.1,
@@ -79,9 +83,6 @@ impl<T> BoardPlugin2<T> {
             U16Vec2::new(tile_map.width(), tile_map.height()),
         );
 
-        let mut covered_tiles =
-            HashMap::with_capacity((tile_map.width() * tile_map.height()).into());
-
         let board_size = Vec2::new(
             tile_map.width() as f32 * tile_size,
             tile_map.height() as f32 * tile_size,
@@ -93,11 +94,6 @@ impl<T> BoardPlugin2<T> {
             }
             BoardPositionOption::Custom(p) => p,
         };
-
-        // Create entities
-        let mut safe_start_entity = None;
-
-        let mut board_entities = None;
 
         // Spawn background
         let background_entity = commands
@@ -114,6 +110,15 @@ impl<T> BoardPlugin2<T> {
             .insert(Name::new("Background"))
             .id();
 
+        // Spawn tiles
+        let spawn_tiles_return = Self::spawn_tiles(
+            &mut commands,
+            &tile_map,
+            tile_size,
+            tile_padding,
+            &board_assets,
+        );
+
         let board_entity = commands
             .spawn_empty()
             .insert(Name::new("Board"))
@@ -121,18 +126,7 @@ impl<T> BoardPlugin2<T> {
             .insert(GlobalTransform::default())
             .insert(InheritedVisibility::default())
             .insert(TouchInterpretationComponent::default())
-            .with_children(|parent| {
-                // Spawn tiles
-                board_entities = Some(Self::spawn_tiles(
-                    parent,
-                    &tile_map,
-                    tile_size,
-                    tile_padding,
-                    &board_assets,
-                    &mut covered_tiles,
-                    &mut safe_start_entity,
-                ));
-            })
+            .push_children(&spawn_tiles_return.board_children)
             .push_children(&[background_entity])
             .id();
 
@@ -144,16 +138,16 @@ impl<T> BoardPlugin2<T> {
             },
             tile_size,
             tile_padding,
-            covered_tiles,
+            covered_tiles: spawn_tiles_return.covered_tiles,
             entity: board_entity,
             background_entity,
-            entities: board_entities.unwrap(),
+            entities: spawn_tiles_return.board_entities,
             marked_tiles: Vec::new(),
             canvas_size: get_canvas_size().unwrap(),
         });
 
         if board_options.safe_start {
-            if let Some(entity) = safe_start_entity {
+            if let Some(entity) = spawn_tiles_return.safe_start_entity {
                 commands.entity(entity).insert(Uncover);
             }
         }
@@ -161,15 +155,17 @@ impl<T> BoardPlugin2<T> {
 
     #[allow(clippy::too_many_arguments)]
     fn spawn_tiles(
-        parent: &mut ChildBuilder,
+        commands: &mut Commands,
         tile_map: &TileMap,
         tile_size: f32,
         tile_padding: f32,
         board_assets: &BoardAssets,
-        covered_tiles: &mut HashMap<Coordinates, Entity>,
-        safe_start_entity: &mut Option<Entity>,
-    ) -> Vec<TileEntities> {
+    ) -> SpawnTilesReturn {
+        let mut children = Vec::new();
         let mut tile_entities = Vec::new();
+        let mut covered_tiles =
+            HashMap::with_capacity((tile_map.width() * tile_map.height()).into());
+        let mut safe_start_entity = None;
 
         // Tiles
         for (y, tile_row) in tile_map.map().iter().enumerate() {
@@ -179,8 +175,9 @@ impl<T> BoardPlugin2<T> {
                     y: y as u16,
                 };
 
-                let mut cmd = parent.spawn_empty();
+                let mut cmd = commands.spawn_empty();
                 let root_id = cmd.id();
+                children.push(root_id);
 
                 // Create all of the components common between all tiles
                 cmd.insert(SpriteBundle {
@@ -221,7 +218,7 @@ impl<T> BoardPlugin2<T> {
                     covered_tiles.insert(coordinates, entity);
 
                     if safe_start_entity.is_none() && *tile == Tile::Empty {
-                        *safe_start_entity = Some(entity);
+                        safe_start_entity = Some(entity);
                     }
                 });
 
@@ -276,7 +273,12 @@ impl<T> BoardPlugin2<T> {
             }
         }
 
-        tile_entities
+        SpawnTilesReturn {
+            board_children: children,
+            board_entities: tile_entities,
+            covered_tiles,
+            safe_start_entity,
+        }
     }
 
     /// Generates the bomb counter text 2D Bundle for a given value
