@@ -8,6 +8,7 @@ use crate::{
 };
 use bevy::{
     app::PluginGroupBuilder,
+    asset::AssetServer,
     input::keyboard::{Key, KeyboardInput},
     log,
     prelude::*,
@@ -49,7 +50,25 @@ fn set_asset_plugin(plugin_group: impl PluginGroup) -> PluginGroupBuilder {
     plugin_group.set(asset_plugin)
 }
 
+#[cfg(feature = "wasm")]
+fn set_asset_plugin(
+    plugin_group: impl PluginGroup,
+    asset_root: Option<String>,
+) -> PluginGroupBuilder {
+    if let Some(asset_root) = asset_root {
+        let asset_plugin = AssetPlugin {
+            file_path: asset_root,
+            ..default()
+        };
+
+        plugin_group.set(asset_plugin)
+    } else {
+        plugin_group.build()
+    }
+}
+
 fn make_default_plugins(
+    asset_root: Option<String>,
     canvas_id_selector: Option<String>,
     resolution: Vec2,
 ) -> PluginGroupBuilder {
@@ -59,6 +78,9 @@ fn make_default_plugins(
 
     #[cfg(feature = "process_assets")]
     let default_plugins = set_asset_plugin(default_plugins);
+
+    #[cfg(feature = "wasm")]
+    let default_plugins = set_asset_plugin(default_plugins, asset_root);
 
     default_plugins
 }
@@ -159,6 +181,7 @@ pub fn run(config: GameConfig) {
     app.register_types(TypeRegistry);
 
     app.add_plugins(make_default_plugins(
+        config.asset_root,
         config.canvas_id_selector,
         resolution.into(),
     ));

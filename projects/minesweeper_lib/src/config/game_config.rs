@@ -6,6 +6,10 @@ mod internal {
     #[wasm_bindgen]
     #[derive(Debug, Default, Clone)]
     pub struct GameConfig {
+        /// The root location to load assets from
+        #[wasm_bindgen(skip)]
+        pub asset_root: Option<String>,
+
         /// The number of bombs on the map
         #[wasm_bindgen(skip)]
         pub bomb_count: Option<u16>,
@@ -37,8 +41,10 @@ mod internal {
 
     #[wasm_bindgen]
     impl GameConfig {
+        #[allow(clippy::too_many_arguments)]
         #[wasm_bindgen(constructor)]
         pub fn wasm_constructor(
+            asset_root: Option<String>,
             bomb_count: Option<u16>,
             canvas_id_selector: Option<String>,
             color_config: Option<GameColorConfig>,
@@ -48,6 +54,7 @@ mod internal {
             tile_size: Option<F32ClampConfig>,
         ) -> Self {
             Self {
+                asset_root,
                 bomb_count,
                 canvas_id_selector,
                 color_config,
@@ -66,6 +73,9 @@ mod internal {
 
     #[derive(Debug, Default, Clone)]
     pub struct GameConfig {
+        /// The root location to load assets from
+        pub asset_root: Option<String>,
+
         /// The number of bombs on the map
         pub bomb_count: Option<u16>,
 
