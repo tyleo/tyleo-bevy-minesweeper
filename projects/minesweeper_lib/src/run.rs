@@ -4,7 +4,7 @@ use crate::{
     ext::*,
     resources::*,
     util::*,
-    BoardPlugin2, TypeRegistry,
+    BoardPlugin, TypeRegistry,
 };
 use bevy::{
     app::PluginGroupBuilder,
@@ -162,7 +162,7 @@ pub fn run(config: GameConfig) {
         config.canvas_id_selector,
         resolution.into(),
     ));
-    app.add_plugins(BoardPlugin2 {
+    app.add_plugins(BoardPlugin {
         running_state: AppState::InGame,
     });
 
